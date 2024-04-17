@@ -75,10 +75,10 @@
   }
 }
 .done {
-  @apply bg-green-600 hover:bg-green-500;
+  @apply bg-gradient-to-b from-indigo-100 to-indigo-400 hover:to-indigo-600 hover:shadow-md;
 }
 .fail {
-  @apply bg-gray-200 hover:bg-gray-200;
+  @apply bg-gradient-to-b from-gray-100 to-gray-300 hover:to-gray-200 hover:shadow-md text-gray-500;
 }
 .null {
   @apply border pointer-events-none;
@@ -87,5 +87,5 @@
   @apply bg-yellow-400 hover:bg-yellow-500;
 }
 .comming {
-  @apply bg-none border border-gray-300 pointer-events-none;
+  @apply bg-none border border-gray-300 pointer-events-none text-gray-400;
 }

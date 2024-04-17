@@ -3,21 +3,23 @@ import { useData } from "../app/context/Context";
 import { DayBtn } from "./DayBtn";
 import { Progress } from "@/components/ui/progress";
 
-function MonthVeiw() {
-  const { monthData } = useData();
+function YearMonth({ month, monthData = [] }) {
+  // const { monthData } = useData();
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
   const today = new Date().getDate();
+  const currentMonth = new Date().getMonth() + 1;
   const year = new Date().getFullYear();
-  const month = new Date().getMonth() + 1;
   const firstDayInMonth = new Date(`${month}/01/${year}`).getDay();
-  const monthName = new Date().toLocaleString("default", { month: "long" });
+  const monthName = new Date(`${month}/01/2024`).toLocaleString("default", {
+    month: "long",
+  });
   const monthDays = daysInMonth(year, month);
   let monthPoints = monthData.length;
   const daysArray = Array.from({ length: monthDays }, (value, i) => i + 1);
 
   return (
-    <div className="container max-w-xl">
+    <div className="xscale-75">
       <h2 className="font-bold text-3xl">
         {monthName} / {year}
       </h2>
@@ -29,7 +31,7 @@ function MonthVeiw() {
         </div>
         <Progress value={(monthPoints / monthDays) * 100} className="h-2" />
       </div>
-      <div className="grid grid-cols-7 gap-y-5 justify-items-center">
+      <div className="grid grid-cols-7 gap-8 justify-items-center">
         {dayNames.map((day, i) => (
           <p
             className={`text-center ${
@@ -47,38 +49,39 @@ function MonthVeiw() {
         )}
         {daysArray.map((day, i) => {
           const dayChecked = monthData.includes(day);
-          if (day < today)
+          if (day < today && month <= currentMonth)
             return (
               <DayBtn
                 status={dayChecked ? "done" : "fail"}
                 dayNumber={day}
+                monthNumber={month}
                 key={i}
               >
                 {day}
               </DayBtn>
             );
 
-          if (day === today)
+          if (day === today && month === currentMonth)
             return (
               <DayBtn
                 status={dayChecked ? "done" : "current"}
                 dayNumber={day}
+                monthNumber={month}
                 key={i}
               >
                 {day}
               </DayBtn>
             );
 
-          if (day > today)
-            return (
-              <DayBtn status="comming" dayNumber={day} key={i}>
-                {day}
-              </DayBtn>
-            );
+          return (
+            <DayBtn status="comming" dayNumber={day} key={i}>
+              {day}
+            </DayBtn>
+          );
         })}
       </div>
     </div>
   );
 }
 
-export default MonthVeiw;
+export default YearMonth;

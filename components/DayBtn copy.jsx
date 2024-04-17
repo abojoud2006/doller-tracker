@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useData } from "@/app/context/Context";
 
-export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
+export function DayBtn({ status, dayNumber = "", children }) {
   const { update } = useData();
 
   function handleClick(value) {
-    update(dayNumber, monthNumber, value);
+    update(dayNumber, value);
   }
   return (
     <DropdownMenu>
