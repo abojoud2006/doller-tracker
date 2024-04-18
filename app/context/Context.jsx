@@ -1,57 +1,34 @@
 "use client";
 import { createContext, useContext, useEffect, useReducer } from "react";
+import { addPoint, getPoints } from "@/lib/actions";
 const BASE_URL = "http://localhost:3000/users";
 
 const DataContext = createContext([]);
 const initialState = {
   monthDays: [],
-  monthData: [1, 2, 4, 5, 6, 7, 9, 10, 11, 14],
-  yearData: [{ 1: [1, 2, 5] }, { 2: [3, 9, 8] }, { 4: [1, 15] }],
+  yearData: {},
   yearDays: [],
-  user: {},
+  user: "sag",
   isLoading: false,
   error: "",
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case "update_done":
-      const newData = state.yearData.find((item) => {
-        if (
-          Object.entries(item)[0][0] === Object.entries(action.payload)[0][0]
-        ) {
-          return {
-            [Object.entries(item)[0][0]]: [
-              ...Object.entries(item)[0][1],
-              ...Object.entries(action.payload)[0][1],
-            ],
-          };
-        } else
-          return {
-            [Object.entries(item)[0][0]]: [
-              ...Object.entries(action.payload)[0][1],
-            ],
-          };
-      });
-
-      console.log(newData);
+    case "updatePoints":
       return {
         ...state,
-        // monthData: [...state.monthData, ...action.payload],
-
-        yearData: newData,
+        yearData: {
+          ...state.yearData,
+          ...{ [action.payload.monthNumber]: action.payload.days },
+        },
       };
-    case "update_fail":
+
+    case "getInitialData":
       return {
         ...state,
-        monthData: [
-          ...state.monthData.filter((day) => day !== +action.payload),
-        ],
-      };
-    case "getYearDays":
-      return {
-        ...state,
-        yearDays: [...action.payload],
+        yearDays: [...action.payload.yearDays],
+        yearData: { ...action.payload.yearData },
       };
 
     case "loading":
@@ -73,19 +50,17 @@ function reducer(state, action) {
 }
 
 function DataProvider({ children }) {
-  const [
-    { monthData, yearDays, yearData, year, user, isLoading, error },
-    dispatch,
-  ] = useReducer(reducer, initialState);
+  const [{ yearDays, yearData, year, user, isLoading, error }, dispatch] =
+    useReducer(reducer, initialState);
 
   useEffect(function () {
-    getYearDays();
+    getInitialData();
   }, []);
 
   // Get Year Days /////////////////////////////////////////////////////////
-  async function getYearDays() {
+  async function getInitialData() {
     dispatch({ type: "loading" });
-
+    const res = await getPoints({ user: user, year: 2024 });
     const year = new Date().getFullYear();
     let monthDays = [];
     const yearDays = [];
@@ -97,38 +72,40 @@ function DataProvider({ children }) {
       }
       yearDays.push({ [month]: monthDays });
     }
-    dispatch({ type: "getYearDays", payload: yearDays });
+    dispatch({
+      type: "getInitialData",
+      payload: { yearDays: yearDays, yearData: res },
+    });
   }
-  // Get Initial Data /////////////////////////////////////////////////////////
-  // async function createMonthData() {
-  //   dispatch({ type: "loading" });
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  //   try {
-  //     const res = await fetch(`${BASE_URL}`);
-  //     const data = await res.json();
-  //     dispatch({ type: "calendarCreated", payload: data });
-  //   } catch {
-  //     dispatch({
-  //       type: "error",
-  //       payload: "There was an error loading data...",
-  //     });
-  //   }
-  // }
 
   // Update /////////////////////////////////////////////////////////
   async function update(dayNumber, monthNumber, value) {
     dispatch({ type: "loading" });
+    let days = [];
     try {
-      if (value === "done")
-        dispatch({
-          type: "update_done",
-          payload: { [monthNumber]: [dayNumber] },
-        });
+      if (value === "done") {
+        days = yearData[monthNumber]
+          ? [...yearData[monthNumber], dayNumber]
+          : [dayNumber];
+      }
 
-      if (value === "fail")
-        dispatch({ type: "update_fail", payload: [dayNumber] });
+      if (value === "fail") {
+        days = yearData[monthNumber].filter((item) => +item !== dayNumber);
+      }
+      const data = {
+        user: user,
+        year: 2024,
+        month: monthNumber,
+        days: [...days],
+      };
+      const res = await addPoint(data);
 
-      // dispatch({ type: "update", payload: data });
+      if (res.Error) throw new Error("Couldn't add point");
+
+      dispatch({
+        type: "updatePoints",
+        payload: { monthNumber: monthNumber, days: days },
+      });
     } catch {
       dispatch({
         type: "error",
@@ -140,7 +117,6 @@ function DataProvider({ children }) {
   return (
     <DataContext.Provider
       value={{
-        monthData,
         year,
         yearDays,
         yearData,

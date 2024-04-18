@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -17,6 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <div className="flex gap-10">
+          <Link href="/month">Current Month</Link>
+          <Link href="/year">Year</Link>
+        </div>
         <Providers>{children}</Providers>
       </body>
     </html>

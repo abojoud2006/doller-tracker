@@ -7,12 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuArrow,
 } from "@/components/ui/dropdown-menu";
 import { useData } from "@/app/context/Context";
 
 export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
   const { update } = useData();
-
   function handleClick(value) {
     update(dayNumber, monthNumber, value);
   }
@@ -23,23 +23,27 @@ export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
           {children}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="flex gap-3 items-center text-gray-600 rounded-full">
-        <DropdownMenuItem
-          disabled={status === "done"}
-          className="flex gap-2 items-center p-0 px-4 py-2 rounded-full focus:bg-green-100 focus:text-green-800 cursor-pointer"
-          onClick={() => handleClick("done")}
-        >
-          <CircleCheck /> <span>Done</span>
-        </DropdownMenuItem>
-        <div className="bg-gray-200 h-8 w-[1px]"></div>
+      <DropdownMenuContent className=" text-gray-600 rounded-full">
+        {status !== "done" && (
+          <DropdownMenuItem
+            disabled={status === "done"}
+            className="flex gap-3 items-center justify-center py-2 rounded-full focus:bg-indigo-100 focus:text-indigo-700 cursor-pointer text-primary "
+            onClick={() => handleClick("done")}
+          >
+            <CircleCheck /> <span>Done</span>
+          </DropdownMenuItem>
+        )}
 
-        <DropdownMenuItem
-          disabled={status === "fail"}
-          className="flex gap-2 items-center p-0 px-4 py-2 rounded-full focus:bg-red-100 focus:text-red-700 cursor-pointer"
-          onClick={() => handleClick("fail")}
-        >
-          <CircleX /> <span>Fail</span>
-        </DropdownMenuItem>
+        {status === "done" && (
+          <DropdownMenuItem
+            disabled={status === "fail"}
+            className="flex gap-3 items-center justify-center py-2 rounded-full focus:bg-red-100  cursor-pointer text-red-600 focus:text-red-700"
+            onClick={() => handleClick("fail")}
+          >
+            <CircleX /> <span>Fail</span>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuArrow />
       </DropdownMenuContent>
     </DropdownMenu>
   );

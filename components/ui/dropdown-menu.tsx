@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+// const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
@@ -91,6 +91,39 @@ const DropdownMenuItem = React.forwardRef<
   />
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
+
+//Arrow ----------------------------------------------------
+const DropdownMenuArrow = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Arrow>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Arrow> & {
+    inset?: boolean;
+  }
+>(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Arrow
+    ref={ref}
+    className={cn("fill-primary", className)}
+    {...props}
+  />
+));
+DropdownMenuArrow.displayName = DropdownMenuPrimitive.Arrow.displayName;
+
+//Trigger ----------------------------------------------------
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger> & {
+    inset?: boolean;
+  }
+>(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "focus:outline-2 focus:outline-primary data-[state=open]:border-2 data-[state=open]:border-primary",
+      className
+    )}
+    {...props}
+  />
+));
+DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
@@ -197,4 +230,5 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  DropdownMenuArrow,
 };
