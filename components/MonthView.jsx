@@ -59,6 +59,7 @@ function MonthView({ month, monthData = [] }) {
                 monthNumber={month}
                 key={i}
               >
+                {/* display day number */}
                 {day}
               </DayBtn>
             );

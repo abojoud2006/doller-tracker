@@ -1,7 +1,7 @@
 "use client";
 
 import { useData } from "@/app/context/Context";
-import YearMonth from "./MonthView";
+import MonthView from "./MonthView";
 function YearView() {
   const { yearDays, yearData } = useData();
 
@@ -12,7 +12,7 @@ function YearView() {
         data = data?.map((i) => Number(i));
         const monthData = data ? data : [];
         return (
-          <YearMonth
+          <MonthView
             key={i}
             month={Number(Object.entries(month)[0][0])}
             monthData={monthData}
