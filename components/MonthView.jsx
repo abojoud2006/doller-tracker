@@ -19,7 +19,10 @@ function MonthView({ month, monthData = [] }) {
   const daysArray = Array.from({ length: monthDays }, (value, i) => i + 1);
   return (
     <div className="max-w-lg mx-auto">
-      <Link className="font-bold text-3xl" href={`/month/${month}`}>
+      <Link
+        className="font-bold text-3xl hover:text-primary"
+        href={`/month/${month}`}
+      >
         {monthName} / {year}
       </Link>
       <div className="mb-12">

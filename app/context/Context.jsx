@@ -1,14 +1,14 @@
 "use client";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { addPoint, getPoints } from "@/lib/actions";
-const BASE_URL = "http://localhost:3000/users";
+import { useUser } from "@clerk/nextjs";
 
 const DataContext = createContext([]);
 const initialState = {
   monthDays: [],
   yearData: {},
   yearDays: [],
-  user: "sag",
+  user: "",
   isLoading: false,
   error: "",
 };
@@ -29,6 +29,7 @@ function reducer(state, action) {
         ...state,
         yearDays: [...action.payload.yearDays],
         yearData: { ...action.payload.yearData },
+        user: action.payload.user,
       };
 
     case "loading":
@@ -50,17 +51,24 @@ function reducer(state, action) {
 }
 
 function DataProvider({ children }) {
-  const [{ yearDays, yearData, year, user, isLoading, error }, dispatch] =
-    useReducer(reducer, initialState);
+  const { isSignedIn, user, isLoaded } = useUser();
+  // console.log(555, user);
+  const [{ yearDays, yearData, year, isLoading, error }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
-  useEffect(function () {
-    getInitialData();
-  }, []);
+  useEffect(
+    function () {
+      if (isSignedIn) getInitialData();
+    },
+    [isSignedIn]
+  );
 
   // Get Year Days /////////////////////////////////////////////////////////
   async function getInitialData() {
     dispatch({ type: "loading" });
-    const res = await getPoints({ user: user, year: 2024 });
+    const res = await getPoints({ user: user.id, year: 2024 });
     const year = new Date().getFullYear();
     let monthDays = [];
     const yearDays = [];
@@ -74,7 +82,7 @@ function DataProvider({ children }) {
     }
     dispatch({
       type: "getInitialData",
-      payload: { yearDays: yearDays, yearData: res },
+      payload: { yearDays: yearDays, yearData: res, user: user.id },
     });
   }
 
@@ -93,7 +101,7 @@ function DataProvider({ children }) {
         days = yearData[monthNumber].filter((item) => +item !== dayNumber);
       }
       const data = {
-        user: user,
+        user: user.id,
         year: 2024,
         month: monthNumber,
         days: [...days],
