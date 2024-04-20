@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuArrow,
 } from "@/components/ui/dropdown-menu";
-import { useData } from "@/app/context/Context";
+import { useData } from "@/app/(root)/context/Context";
 
 export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
   const { update } = useData();
@@ -19,7 +19,7 @@ export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className={`size-12 rounded-full text-md ${status}`}>
+        <button className={`size-10 lg:size-12 rounded-full text-md ${status}`}>
           {children}
         </button>
       </DropdownMenuTrigger>

@@ -3,6 +3,13 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import { addPoint, getPoints } from "@/lib/actions";
 import { useUser } from "@clerk/nextjs";
 
+const daysInYear = new Date(2024, 1, 29).getDate() === 29 ? 366 : 365;
+
+const calcGoal = (points = 0, donePoints = 0, failPoints = 0, target = 0) => {
+  const newBalance = points - (donePoints + failPoints);
+  const newPercentage = Math.round((newBalance / target) * 100);
+  return { balance: newBalance, percentage: newPercentage };
+};
 const DataContext = createContext([]);
 const initialState = {
   monthDays: [],
@@ -11,9 +18,23 @@ const initialState = {
   user: "",
   isLoading: false,
   error: "",
+  goal: {
+    target: 1000,
+    donePoints: 20,
+    failPoints: 10,
+    points: daysInYear,
+    remainPoints: function () {
+      return this.points - (this.donePoints + this.failPoints);
+    },
+    duration: daysInYear,
+    balance: 0,
+    percentage: 0,
+    duration: daysInYear,
+  },
 };
 
 function reducer(state, action) {
+  let newGoal;
   switch (action.type) {
     case "updatePoints":
       return {
@@ -25,11 +46,39 @@ function reducer(state, action) {
       };
 
     case "getInitialData":
+      newGoal = calcGoal(
+        state.goal.points,
+        state.goal.donePoints,
+        state.goal.failPoints,
+        state.goal.target
+      );
+
       return {
         ...state,
         yearDays: [...action.payload.yearDays],
         yearData: { ...action.payload.yearData },
         user: action.payload.user,
+        goal: {
+          ...state.goal,
+          balance: newGoal.balance,
+          percentage: newGoal.percentage,
+        },
+      };
+    case "editGoal":
+      newGoal = calcGoal(
+        state.goal.points,
+        state.goal.donePoints,
+        state.goal.failPoints,
+        action.payload.target
+      );
+      return {
+        ...state,
+        goal: {
+          ...state.goal,
+          target: action.payload.target,
+          balance: newGoal.balance,
+          percentage: newGoal.percentage,
+        },
       };
 
     case "loading":
@@ -53,10 +102,8 @@ function reducer(state, action) {
 function DataProvider({ children }) {
   const { isSignedIn, user, isLoaded } = useUser();
   // console.log(555, user);
-  const [{ yearDays, yearData, year, isLoading, error }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ yearDays, yearData, year, goal, isLoading, error }, dispatch] =
+    useReducer(reducer, initialState);
 
   useEffect(
     function () {
@@ -128,10 +175,12 @@ function DataProvider({ children }) {
         year,
         yearDays,
         yearData,
+        goal,
         user,
         isLoading,
         update,
         error,
+        dispatch,
       }}
     >
       {children}

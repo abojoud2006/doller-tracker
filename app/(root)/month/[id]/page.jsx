@@ -6,11 +6,7 @@ function Page({ params }) {
   const { yearData } = useData();
   const currentMonth = +params.id;
   const currentMonthData = yearData[currentMonth] || [];
-  return (
-    <div className="pt-20 container">
-      <MonthView month={currentMonth} monthData={currentMonthData} />
-    </div>
-  );
+  return <MonthView month={currentMonth} monthData={currentMonthData} />;
 }
 
 export default Page;

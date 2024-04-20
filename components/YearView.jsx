@@ -1,12 +1,12 @@
 "use client";
 
-import { useData } from "@/app/context/Context";
+import { useData } from "@/app/(root)/context/Context";
 import MonthView from "./MonthView";
 function YearView() {
   const { yearDays, yearData } = useData();
 
   return (
-    <div className="grid grid-cols-3 gap-28 gap-y-6 container ">
+    <div className="flex flex-wrap gap-x-24 gap-y-24 container">
       {yearDays.map((month, i) => {
         let data = yearData[Object.entries(month)[0][0]];
         data = data?.map((i) => Number(i));

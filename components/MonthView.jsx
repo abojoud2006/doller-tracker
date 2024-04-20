@@ -2,8 +2,12 @@
 import Link from "next/link";
 import { DayBtn } from "./DayBtn";
 import { Progress } from "@/components/ui/progress";
+import { Separator } from "./ui/separator";
+import GoalProgress from "./GoalProgress";
+import { usePathname } from "next/navigation";
 
 function MonthView({ month, monthData = [] }) {
+  const path = usePathname();
   monthData = monthData.map((i) => +i);
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
@@ -18,15 +22,15 @@ function MonthView({ month, monthData = [] }) {
   let monthPoints = monthData.length;
   const daysArray = Array.from({ length: monthDays }, (value, i) => i + 1);
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="max-w-lg">
       <Link
-        className="font-bold text-3xl hover:text-primary"
+        className="font-bold text-3xl hover:text-primary text-center md:text-start block mb-4"
         href={`/month/${month}`}
       >
         {monthName} / {year}
       </Link>
-      <div className="mb-12">
-        <div className="text-end text-gray-500 mb-2">
+      <div className="mb-12 ">
+        <div className="text-center md:text-end text-gray-500 mb-4">
           Month Points{" "}
           <span className="font-bold text-primary">{monthPoints}</span>/
           {monthDays}
@@ -84,6 +88,12 @@ function MonthView({ month, monthData = [] }) {
           );
         })}
       </div>
+      {path !== "/year" && (
+        <div>
+          <Separator className="my-12 block" />
+          <GoalProgress />
+        </div>
+      )}
     </div>
   );
 }
