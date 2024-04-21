@@ -24,7 +24,7 @@ function MonthView({ month, monthPoints = [] }) {
   let points = monthPoints.length;
   const daysArray = Array.from({ length: monthDays }, (value, i) => i + 1);
   return (
-    <div className="relative max-w-xs md:max-w-lg">
+    <div className="relative max-w-xs md:max-w-lg mb-4 lg:mb-0">
       {isLoading && path !== "/year" && (
         <div className="bg-white/80 inset-0 absolute z-50 flex items-center justify-center">
           <LoaderCircle
