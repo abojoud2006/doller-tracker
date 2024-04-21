@@ -99,7 +99,7 @@ function MonthView({ month, monthPoints = [] }) {
       </div>
       {path !== "/year" && (
         <div>
-          <Separator className="my-12 block" />
+          <Separator className="my-8 md:my-12 block" />
           <GoalProgress />
         </div>
       )}
