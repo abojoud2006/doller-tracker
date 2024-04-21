@@ -19,7 +19,7 @@ function Nav() {
           }`}
         >
           <CalendarDays size={20} />
-          <span>Current Month</span>
+          <span className="hidden md:inline-block">Current Month</span>
         </Link>
 
         <Link
@@ -29,7 +29,7 @@ function Nav() {
           }`}
         >
           <LayoutGrid size={20} />
-          <span>Year</span>
+          <span className="hidden md:inline-block">Year</span>
         </Link>
       </div>
     </div>
