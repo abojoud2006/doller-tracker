@@ -6,6 +6,7 @@ import {
   currentUser,
 } from "@clerk/nextjs";
 import Nav from "./Nav";
+import PieChart from "./PieChart";
 import AppSettings from "./AppSettings";
 export default async function Header() {
   const user = await currentUser();
@@ -13,7 +14,10 @@ export default async function Header() {
     <header className="flex justify-between p-5">
       <Nav />
       <div className="flex gap-10 items-center">
-        <AppSettings />
+        <div className="flex gap-2 items-center">
+          <PieChart size="small" />
+          <AppSettings />
+        </div>
         <SignedIn>
           {/* Mount the UserButton component */}
           <div className="flex gap-2 items-center">

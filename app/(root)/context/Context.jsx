@@ -1,91 +1,92 @@
 "use client";
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { addPoint, getPoints } from "@/lib/actions";
+import { addPoint, getGoal, getPoints } from "@/lib/actions";
 import { useUser } from "@clerk/nextjs";
 
 const daysInYear = new Date(2024, 1, 29).getDate() === 29 ? 366 : 365;
 
-const calcGoal = (points = 0, donePoints = 0, failPoints = 0, target = 0) => {
-  const newBalance = points - (donePoints + failPoints);
-  const newPercentage = Math.round((newBalance / target) * 100);
-  return { balance: newBalance, percentage: newPercentage };
+const calcFailPoints = (points) => {
+  let days = 0;
+  const today = new Date().getDate();
+  const currentMonth = new Date().getMonth() + 1;
+  const year = new Date().getFullYear();
+  for (let month = 1; month <= currentMonth; month++) {
+    if (month < currentMonth) {
+      days = days + new Date(year, month, 0).getDate();
+    } else {
+      days = days + today;
+    }
+  }
+  return days - points;
 };
+
 const DataContext = createContext([]);
 const initialState = {
-  monthDays: [],
-  yearData: {},
+  monthPoints: [],
+  yearPoints: {},
   yearDays: [],
   user: "",
-  isLoading: false,
+  isLoading: true,
   error: "",
   goal: {
-    target: 1000,
-    donePoints: 20,
-    failPoints: 10,
+    target: 0,
+    dailyAmount: 0,
+    currency: "",
     points: daysInYear,
+    donePoints: 0,
+    failPoints: 0,
     remainPoints: function () {
       return this.points - (this.donePoints + this.failPoints);
     },
+
     duration: daysInYear,
-    balance: 0,
-    percentage: 0,
-    duration: daysInYear,
+    balance: function () {
+      return Math.round(this.dailyAmount * this.donePoints);
+    },
+    percentage: function () {
+      return Math.ceil((this.balance() / this.target) * 100);
+    },
   },
 };
 
 function reducer(state, action) {
-  let newGoal;
   switch (action.type) {
-    case "updatePoints":
-      return {
-        ...state,
-        yearData: {
-          ...state.yearData,
-          ...{ [action.payload.monthNumber]: action.payload.days },
-        },
-      };
-
     case "getInitialData":
-      newGoal = calcGoal(
-        state.goal.points,
-        state.goal.donePoints,
-        state.goal.failPoints,
-        state.goal.target
-      );
-
       return {
         ...state,
-        yearDays: [...action.payload.yearDays],
-        yearData: { ...action.payload.yearData },
-        user: action.payload.user,
-        goal: {
-          ...state.goal,
-          balance: newGoal.balance,
-          percentage: newGoal.percentage,
-        },
+        ...action.payload.state,
+        goal: { ...state.goal, ...action.payload.goal },
+        isLoading: false,
       };
+
+    case "updatePoints":
+      const x = action.payload.type === "done" ? 1 : -1;
+      return {
+        ...state,
+        yearPoints: {
+          ...state.yearPoints,
+          ...{ [action.payload.monthNumber]: action.payload.points },
+        },
+        goal: {
+          ...state.goal,
+          donePoints: +state.goal.donePoints + x,
+          failPoints: +state.goal.failPoints - x,
+        },
+        isLoading: false,
+      };
+
     case "editGoal":
-      newGoal = calcGoal(
-        state.goal.points,
-        state.goal.donePoints,
-        state.goal.failPoints,
-        action.payload.target
-      );
       return {
         ...state,
         goal: {
           ...state.goal,
-          target: action.payload.target,
-          balance: newGoal.balance,
-          percentage: newGoal.percentage,
+          ...action.payload,
         },
+        isLoading: false,
       };
 
     case "loading":
       return { ...state, isLoading: true };
-
-    case "calendarCreated":
-      return { ...state, isLoading: false };
 
     case "error":
       return {
@@ -101,8 +102,7 @@ function reducer(state, action) {
 
 function DataProvider({ children }) {
   const { isSignedIn, user, isLoaded } = useUser();
-  // console.log(555, user);
-  const [{ yearDays, yearData, year, goal, isLoading, error }, dispatch] =
+  const [{ yearDays, yearPoints, year, goal, isLoading, error }, dispatch] =
     useReducer(reducer, initialState);
 
   useEffect(
@@ -115,43 +115,56 @@ function DataProvider({ children }) {
   // Get Year Days /////////////////////////////////////////////////////////
   async function getInitialData() {
     dispatch({ type: "loading" });
-    const res = await getPoints({ user: user.id, year: 2024 });
+    const yearPoints = await getPoints({ user: user.id, year: 2024 });
+    // calculate points
+    let points = 0;
+    Object.values(yearPoints).map((month) => (points = points + month.length));
+    let failPoints = calcFailPoints(points);
+
+    let goal = await getGoal({ user: user.id });
+    goal = { ...goal, donePoints: points };
+    goal.failPoints = failPoints;
     const year = new Date().getFullYear();
-    let monthDays = [];
+    let monthPoints = [];
     const yearDays = [];
     for (let month = 1; month <= 12; month++) {
       const daysInMonth = new Date(year, month, 0).getDate();
-      monthDays = [];
+      monthPoints = [];
       for (let day = 1; day <= daysInMonth; day++) {
-        monthDays.push(day);
+        monthPoints.push(day);
       }
-      yearDays.push({ [month]: monthDays });
+      yearDays.push({ [month]: monthPoints });
     }
     dispatch({
       type: "getInitialData",
-      payload: { yearDays: yearDays, yearData: res, user: user.id },
+      payload: {
+        state: { yearDays: yearDays, yearPoints: yearPoints, user: user.id },
+        goal: goal,
+      },
     });
   }
 
   // Update /////////////////////////////////////////////////////////
-  async function update(dayNumber, monthNumber, value) {
+  async function update(dayNumber, monthNumber, type) {
     dispatch({ type: "loading" });
-    let days = [];
+    let points = [];
+    const year = new Date().getFullYear();
     try {
-      if (value === "done") {
-        days = yearData[monthNumber]
-          ? [...yearData[monthNumber], dayNumber]
+      if (type === "done") {
+        points = yearPoints[monthNumber]
+          ? [...yearPoints[monthNumber], dayNumber]
           : [dayNumber];
       }
 
-      if (value === "fail") {
-        days = yearData[monthNumber].filter((item) => +item !== dayNumber);
+      if (type === "fail") {
+        points = yearPoints[monthNumber].filter((item) => +item !== dayNumber);
       }
       const data = {
         user: user.id,
-        year: 2024,
+        userName: `${user.firstName} ${user.lastName}`,
+        year: year,
         month: monthNumber,
-        days: [...days],
+        points: [...points],
       };
       const res = await addPoint(data);
 
@@ -159,7 +172,7 @@ function DataProvider({ children }) {
 
       dispatch({
         type: "updatePoints",
-        payload: { monthNumber: monthNumber, days: days },
+        payload: { monthNumber: monthNumber, points: points, type: type },
       });
     } catch {
       dispatch({
@@ -174,7 +187,7 @@ function DataProvider({ children }) {
       value={{
         year,
         yearDays,
-        yearData,
+        yearPoints,
         goal,
         user,
         isLoading,

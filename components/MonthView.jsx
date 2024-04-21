@@ -5,10 +5,12 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "./ui/separator";
 import GoalProgress from "./GoalProgress";
 import { usePathname } from "next/navigation";
-
-function MonthView({ month, monthData = [] }) {
+import { useData } from "@/app/(root)/context/Context";
+import { LoaderCircle } from "lucide-react";
+function MonthView({ month, monthPoints = [] }) {
+  const { isLoading } = useData();
   const path = usePathname();
-  monthData = monthData.map((i) => +i);
+  monthPoints = monthPoints.map((i) => +i);
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
   const today = new Date().getDate();
@@ -19,10 +21,18 @@ function MonthView({ month, monthData = [] }) {
     month: "long",
   });
   const monthDays = daysInMonth(year, month);
-  let monthPoints = monthData.length;
+  let points = monthPoints.length;
   const daysArray = Array.from({ length: monthDays }, (value, i) => i + 1);
   return (
-    <div className="max-w-lg">
+    <div className="relative max-w-lg">
+      {isLoading && path !== "/year" && (
+        <div className="bg-white/80 inset-0 absolute z-50 flex items-center justify-center">
+          <LoaderCircle
+            className="animate-spin size-32 text-indigo-300"
+            strokeWidth={1.5}
+          />
+        </div>
+      )}
       <Link
         className="font-bold text-3xl hover:text-primary text-center md:text-start block mb-4"
         href={`/month/${month}`}
@@ -31,11 +41,10 @@ function MonthView({ month, monthData = [] }) {
       </Link>
       <div className="mb-12 ">
         <div className="text-center md:text-end text-gray-500 mb-4">
-          Month Points{" "}
-          <span className="font-bold text-primary">{monthPoints}</span>/
+          Month Points <span className="font-bold text-primary">{points}</span>/
           {monthDays}
         </div>
-        <Progress value={(monthPoints / monthDays) * 100} className="h-2" />
+        <Progress value={(points / monthDays) * 100} className="h-2" />
       </div>
       <div className="grid grid-cols-7 gap-8 justify-items-center">
         {dayNames.map((day, i) => (
@@ -54,7 +63,7 @@ function MonthView({ month, monthData = [] }) {
             i < firstDayInMonth && <DayBtn status="null" key={i}></DayBtn>
         )}
         {daysArray.map((day, i) => {
-          const dayChecked = monthData.includes(day);
+          const dayChecked = monthPoints.includes(day);
           if (month < currentMonth)
             return (
               <DayBtn

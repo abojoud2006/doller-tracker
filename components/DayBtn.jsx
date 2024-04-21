@@ -13,8 +13,8 @@ import { useData } from "@/app/(root)/context/Context";
 
 export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
   const { update } = useData();
-  function handleClick(value) {
-    update(dayNumber, monthNumber, value);
+  function handleClick(type) {
+    update(dayNumber, monthNumber, type);
   }
   return (
     <DropdownMenu>

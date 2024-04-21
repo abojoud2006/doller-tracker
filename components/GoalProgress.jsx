@@ -14,9 +14,10 @@ function GoalProgress() {
           <div className="text-xl text-gray-500 flex gap-1 items-center mb-2">
             <Wallet size={22} />
             <span>
-              <strong className="text-primary">{goal.balance}</strong>
-              <small className="font-normal">$</small> / {goal.target}
-              <small className="font-normal">$</small>
+              <strong className="text-primary">{goal.balance()}</strong>
+              <small className="font-normal">{goal.currency}</small> /{" "}
+              <strong>{goal.target}</strong>
+              <small className="font-normal">{goal.currency}</small>
             </span>
           </div>
           <p className="text-sm">keep going to achieve your amazing goal.</p>

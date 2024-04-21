@@ -8,7 +8,7 @@ export default function Page() {
         <div className="flex flex-col gap-4 items-center lg:items-start">
           <Image src="logo.svg" width={200} height={200} alt="logo" />
           <h2 className="max-w-md lg:text-start text-center text-gray-500">
-            Enjoy daily saving with good user experience application ang
+            Enjoy daily saving with good user experience application and
             achieved your goal by easy methods.
           </h2>
         </div>
