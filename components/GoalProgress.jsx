@@ -14,7 +14,7 @@ function GoalProgress() {
             <h2 className="text-xl font-semibold text-gray-700 text-nowrap">
               Goal Progress
             </h2>
-            <div className="text-xl text-gray-500 flex gap-1 items-center mb-2 ">
+            <div className="text-xl text-gray-500 flex gap-1 items-center">
               <Wallet size={22} />
               <span className="text-nowrap">
                 <strong className="text-primary">{goal.balance()}</strong>
@@ -27,7 +27,7 @@ function GoalProgress() {
               keep going to achieve your amazing goal.
             </p>
           </div>
-          <div className="text-sm text-gray-500 flex lg:flex-col gap-2">
+          <div className="text-sm text-gray-500 flex lg:flex-col gap-2 md:gap-y-2 gap-y-1 flex-wrap">
             <div className="flex items-center gap-1 ">
               <span className="size-3 bg-primary rounded-full block"></span>
               <span className="text-nowrap">{goal.donePoints} Done</span>
