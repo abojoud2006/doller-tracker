@@ -12,11 +12,7 @@ function PieChartElement(props) {
 
   return (
     <div>
-      <div
-        className={` size-20 relative ${
-          size === "small" ? "lg:size-10" : "lg:size-28"
-        }`}
-      >
+      <div className={`relative ${size === "small" ? "size-10" : "size-28"}`}>
         {size !== "small" && (
           <div className="absolute flex items-center justify-center inset-0 text-gray-600">
             <span className="font-medium text-2xl">
