@@ -35,11 +35,10 @@ const initialState = {
     points: daysInYear,
     donePoints: 0,
     failPoints: 0,
+    // Claculations
     remainPoints: function () {
       return this.points - (this.donePoints + this.failPoints);
     },
-
-    duration: daysInYear,
     balance: function () {
       return Math.round(this.dailyAmount * this.donePoints);
     },
@@ -109,6 +108,7 @@ function DataProvider({ children }) {
     function () {
       if (isSignedIn) getInitialData();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isSignedIn]
   );
 
