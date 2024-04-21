@@ -13,7 +13,7 @@ export default async function Header() {
   return (
     <header className="flex justify-between p-5">
       <Nav />
-      <div className="flex gap-10 items-center">
+      <div className="flex gap-3 md:gap-10 items-center">
         <div className="flex gap-2 items-center">
           <PieChart size="small" />
           <AppSettings />
