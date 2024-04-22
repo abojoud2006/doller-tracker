@@ -11,12 +11,12 @@ import AppSettings from "./AppSettings";
 export default async function Header() {
   const user = await currentUser();
   return (
-    <header className="flex justify-between p-5">
+    <header className="flex justify-between p-5 py-3 mb-10 shadow bg-indigo-50 ">
       <Nav />
       <div className="flex gap-3 md:gap-10 items-center">
         <div className="flex gap-2 items-center">
           <PieChart size="small" />
-          <AppSettings />
+          <AppSettings position="header" />
         </div>
         <SignedIn>
           {/* Mount the UserButton component */}

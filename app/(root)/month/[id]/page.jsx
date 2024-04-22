@@ -6,7 +6,11 @@ function Page({ params }) {
   const { yearPoints } = useData();
   const currentMonth = +params.id;
   const currentMonthPoints = yearPoints[currentMonth] || [];
-  return <MonthView month={currentMonth} monthPoints={currentMonthPoints} />;
+  return (
+    <div className="container flex justify-center h-full">
+      <MonthView month={currentMonth} monthPoints={currentMonthPoints} />
+    </div>
+  );
 }
 
 export default Page;

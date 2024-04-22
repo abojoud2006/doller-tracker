@@ -5,9 +5,18 @@ import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 function PieChartElement(props) {
   const { goal } = useData();
   const size = props?.size;
+  let doneValue;
+  let remainValue;
+  if (goal.percentage() <= 100) {
+    doneValue = goal.percentage();
+    remainValue = 100 - doneValue;
+  } else if (goal.percentage() > 100) {
+    doneValue = 100;
+    remainValue = 0;
+  }
   const data = [
-    { name: "Done", value: goal.percentage(), color: "#6366f1" },
-    { name: "Remain", value: 100 - goal.percentage(), color: "#e4e4e7" },
+    { name: "Done", value: doneValue, color: "#6366f1" },
+    { name: "Remain", value: remainValue, color: "#e4e4e7" },
   ];
 
   return (

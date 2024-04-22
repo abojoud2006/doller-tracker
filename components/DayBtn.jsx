@@ -12,14 +12,18 @@ import {
 import { useData } from "@/app/(root)/context/Context";
 
 export function DayBtn({ status, dayNumber = "", monthNumber = "", children }) {
-  const { update } = useData();
+  const { update, goal } = useData();
+  const target = goal.target;
   function handleClick(type) {
     update(dayNumber, monthNumber, type);
   }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className={`size-10 lg:size-12 rounded-full text-md ${status}`}>
+        <button
+          className={`size-10 lg:size-12 rounded-full text-md disabled:pointer-events-none ${status}`}
+          disabled={!target}
+        >
           {children}
         </button>
       </DropdownMenuTrigger>

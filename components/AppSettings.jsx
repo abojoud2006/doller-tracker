@@ -26,7 +26,7 @@ import { editGoal } from "@/lib/actions";
 import { useData } from "@/app/(root)/context/Context";
 import { useState } from "react";
 
-function AppSettings() {
+function AppSettings({ position }) {
   const { user } = useUser();
   const { dispatch, goal } = useData();
   const [open, setOpen] = useState(false);
@@ -78,7 +78,16 @@ function AppSettings() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Settings className="text-gray-500 hover:text-primary cursor-pointer" />
+        <div>
+          {position === "header" && (
+            <Settings className="text-gray-500 hover:text-primary cursor-pointer" />
+          )}
+          {position === "missingGoal" && (
+            <Button size="lg" className="hover:bg-indigo-600 w-full mt-8">
+              Set your goal now
+            </Button>
+          )}
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
