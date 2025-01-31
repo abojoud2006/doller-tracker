@@ -1,7 +1,7 @@
 "use client";
 import { useData } from "@/app/(root)/context/Context";
 import PieChart from "@/components/PieChart";
-import { Bold, CloudHail, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 
 function GoalProgress() {
   const { goal } = useData();

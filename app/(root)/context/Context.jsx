@@ -116,6 +116,7 @@ function DataProvider({ children }) {
   async function getInitialData() {
     dispatch({ type: "loading" });
     const yearPoints = await getPoints({ user: user.id, year: 2024 });
+    console.log(3333333, yearPoints);
     // calculate points
     let points = 0;
     Object.values(yearPoints).map((month) => (points = points + month.length));
