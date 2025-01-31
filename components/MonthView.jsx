@@ -17,7 +17,9 @@ function MonthView({ month, monthPoints = [] }) {
   const currentMonth = new Date().getMonth() + 1;
   const year = new Date().getFullYear();
   const firstDayInMonth = new Date(`${month}/01/${year}`).getDay();
-  const monthName = new Date(`${month}/01/2024`).toLocaleString("default", {
+  const monthName = new Date(
+    `${month}/01/${new Date().getFullYear()}`
+  ).toLocaleString("default", {
     month: "long",
   });
   const monthDays = daysInMonth(year, month);

@@ -3,7 +3,8 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import { addPoint, getGoal, getPoints } from "@/lib/actions";
 import { useUser } from "@clerk/nextjs";
 
-const daysInYear = new Date(2024, 1, 29).getDate() === 29 ? 366 : 365;
+const daysInYear =
+  new Date(new Date().getFullYear(), 1, 29).getDate() === 29 ? 366 : 365;
 
 const calcFailPoints = (points) => {
   let days = 0;
@@ -115,8 +116,10 @@ function DataProvider({ children }) {
   // Get Year Days /////////////////////////////////////////////////////////
   async function getInitialData() {
     dispatch({ type: "loading" });
-    const yearPoints = await getPoints({ user: user.id, year: 2024 });
-    console.log(3333333, yearPoints);
+    const yearPoints = await getPoints({
+      user: user.id,
+      year: new Date().getFullYear(),
+    });
     // calculate points
     let points = 0;
     Object.values(yearPoints).map((month) => (points = points + month.length));
